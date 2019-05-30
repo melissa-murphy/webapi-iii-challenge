@@ -1,4 +1,4 @@
-const express = 'express';
+const express = require('express');
 
 const router = express.Router();
 
@@ -33,10 +33,16 @@ router.put('/:id', (req, res) => {
 //custom middleware
 
 function validateUserId(req, res, next) {
+    // if user id is is valid
+
+    // return and store as req.user
+
+    // else return error 400 invalid
 
 };
 
 function validateUser(req, res, next) {
+
 
 };
 
@@ -45,3 +51,5 @@ function validatePost(req, res, next) {
 };
 
 module.exports = router;
+
+
