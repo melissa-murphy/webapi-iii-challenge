@@ -27,11 +27,15 @@ async function validateUserId(req, res, next) {
   let condition = [userId !== null && userId !== '' && userId !== 0];
 
   if (userId) {
+    // if condition is met
     if (condition) {
+      // return user
       user;
+      // if user matches req, set to user and continue
       if (user) {
         req.user = user;
         next();
+        // else, error it up, yo.
       } else {
         res.status(400).json({ message: `This user does not exist` });
       }
@@ -43,9 +47,52 @@ async function validateUserId(req, res, next) {
   }
 }
 
+function validateUser(req, res, next) {
+  const body = req.body;
+  let condition = [body !== null];
 
-function validateUser(req, res, next) {}
+  if (body) {
+    // if condition is met
+    if (condition) {
+      //return body
+      body;
+      // if body matches req, set to body and continue
+      if (body) {
+        req.body = body;
+        next();
+        // error time - git to goin
+      } else {
+        res.status(400).json({ message: `This user does not exist` });
+      }
+    } else {
+      res.status(400).json({ message: `Incomplete submission` });
+    }
+  } else {
+    res.status(400).json({ message: `Missing required` });
+  }
+}
 
-function validatePost(req, res, next) {}
+function validatePost(req, res, next) {
+  // validate body and and create new post if valid
+  const body = req.body;
+  let condition = [body !== null];
+
+  if(body) {
+    if(condition) {
+      body;
+      if(body) {
+        req.body = body;
+        next();
+        // roll out some errors wut
+      }
+    } else {
+      res.status(400).json({ message: `Missing post data` });
+    }
+  } else {
+    res.status(400).json({ message: `missing required text field` });
+  }
+
+
+}
 
 module.exports = router;
