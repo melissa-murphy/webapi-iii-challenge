@@ -5,19 +5,58 @@ const router = express.Router();
 const userDb = require('./userDb');
 const postDb = require('../posts/postDb');
 
-router.post('/', (req, res) => {}); // Add User
+router.post('/', validateUser, (req, res) => {
+userDb.get()
+.then(users => {
+  res.json(users)
+})
+.catch(e => {
+  res.status(500).json({ message: `Internal Server Error, unable to retrieve user` })
+})
+}); // Get Users
 
-router.post('/:id/posts', (req, res) => {}); //
 
-router.get('/', (req, res) => {}); // Get Users
+router.get('/:id', validateUserId, (req, res) => {
+  res.status(200).json(req.user)
+}); // Get User by ID
 
-router.get('/:id', (req, res) => {}); // Get User by ID
 
-router.get('/:id/posts', (req, res) => {}); // Get User Posts
+router.post('/:id/posts', validateUser, validateUserId, (req, res) => {
+  req.body.user_id = req.user.id;
+  console.log(`---------------------------Current validated user:` +  req.body.user_id);
+  postDb.insert(req.body)
+  .then(post => {
+    console.log(`----------------------------Current post:` + post);
+    res.status(200).json({ message: `Post added sucessfully` })
+  })
+  .catch(e => {
+    res.status(500).json({ message: `Internal Server Error: unable to add post` })
+  })
+}); // Add Post to specific user
 
-router.delete('/:id', (req, res) => {}); // Delete User by ID
 
-router.put('/:id', (req, res) => {}); // Update User
+
+router.get('/:id/posts', validatePost, (req, res) => {
+  res.status(200).json(req.post);
+}); // Get User Posts
+
+router.delete('/:id', (req, res) => {
+  userDb.remove(req.params.id)
+  .then(res => {
+    res.status(200).json({ message: `User Deleted` })
+  })
+}); // Delete User by ID
+
+router.put('/:id', (req, res) => {
+  userDb.update(req.params.id, req.body)
+  .then(user => {
+    console.log(`-----------------------------Updated Post:` + user);
+    res.status(200).json({ message: `User Updated Successfully` })
+  })
+  .catch(e => {
+    res.status(500).json({ message: `Internal Server Error: Unable to update User` })
+  })
+}); // Update User
 
 //custom middleware
 
@@ -72,27 +111,5 @@ function validateUser(req, res, next) {
   }
 }
 
-function validatePost(req, res, next) {
-  // validate body and and create new post if valid
-  const body = req.body;
-  let condition = [body !== null];
-
-  if(body) {
-    if(condition) {
-      body;
-      if(body) {
-        req.body = body;
-        next();
-        // roll out some errors wut
-      }
-    } else {
-      res.status(400).json({ message: `Missing post data` });
-    }
-  } else {
-    res.status(400).json({ message: `missing required text field` });
-  }
-
-
-}
 
 module.exports = router;
